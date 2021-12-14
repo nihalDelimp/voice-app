@@ -1,44 +1,203 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html>
 <head>
-  <title>LUI</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>VOICE APP </title>
+	<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+	<style type="text/css">
+		* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html {
+  font-family: "Montserrat";
+  font-size: 20px;
+}
+section {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  background-color: rgb(37, 37, 37);
+  flex-direction: column;
+  padding: 50px 0;
+}
+section h1 {
+  color: rgba(255, 255, 255, 0.322);
+  text-align: center;
+  width: 100%;
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+section p {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.322);
+  width: 100%;
+  margin-bottom: 40px;
+}
+.container {
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+  justify-content: center;
+}
+.texts p {
+  color: black;
+  text-align: left;
+  width: 100%;
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.texts p.replay {
+  text-align: right;
+}
 
-  <!-- bootstrap: -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-
-  <!-- jquery: -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-  <!-- so it can talk back: -->
-  <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
-
-  <!-- so it can geolocate, even in codepen: -->
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-
-  <!-- local files: -->
-  <link rel='stylesheet' href='style.css' />
-  <script type="text/javascript" src="brain.js" ></script>
-  <script type="text/javascript" src="ear.js" ></script>
-  <script type="text/javascript" src="add-on.js" ></script>
+	</style>
 </head>
+<body>
+ <section>
+   <h1>Speech<br> Recognition</h1>
+   <div class="container">
+     <div class="texts">
+     </div>
+   </div>
+   <input autofocus id='input' type='text' title="For example: 'computer what time is it'."/>
+ <button onclick="start()">start</button>
 
-<body onload="welcome()">
-  
-  <div class="vertical-center">
-    <div id='inputArea' class="container-fluid well">
-      <div style="text-align:center;">
-        <progress id='countDownWaiting' value="0" max="100"></progress>
-      </div>
-      <input autofocus id='input' type='text' oninput="converse()" onkeydown="userWantsAnswerNow(event)" size='30' placeholder="Start by typing/saying 'computer'" title="For example: 'computer what time is it'."/>
-    </div>
-    <span id='programming-area' contenteditable="true" oninput="userEditedCode()"></span>
-    <p id='messageLog' class="container-fluid well"></p>
-    <a class="vertical-center" href="https://goo.gl/forms/Nwf8TXvOW2vE2OHA3" target="_blank">Feedback?</a>
-  </div>
-  
+ </section>
 </body>
+<script type="text/javascript">
+	const texts = document.querySelector(".texts");
+let val=0;
+
+
+// let firstTranslation = true;
+// function heardTranslator(heard) {
+//   if (heard.startsWith('translate ')) {
+//     let english = heard.replace('translate ', '');
+//     // allow for context
+//     if (currentConversationTopic !== '' && english === "that") {
+//       english = currentConversationTopic;
+//     }
+//     // allow for delay
+//     if (firstTranslation) {
+//       firstTranslation = false;
+//       say("Please wait for the API to respond.");
+//     }
+//     currentConversationType = "translate";
+//     currentConversationTopic = english;
+//     // did hear, just need to wait for web API response
+//   }
+//   // otherwise
+//   return false;
+// }
+
+window.SpeechRecognition =
+window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.interimResults = true;
+
+let p = document.createElement("p");
+recognition.addEventListener("result", (e) => {
+  texts.appendChild(p);
+  const text = Array.from(e.results)
+    .map((result) => result[0])
+    .map((result) => result.transcript)
+    .join("");
+
+  p.innerText = text;
+
+  if (e.results[0].isFinal) {
+    if (text.includes("how are you")) {
+      p = document.createElement("p");
+      p.classList.add("replay");
+      p.innerText = "I am fine";
+	responsiveVoice.speak(p.innerText);
+
+      texts.appendChild(p);
+    }
+    if (
+      text.includes("what's your name") ||
+      text.includes("what is your name")
+    ) {
+      p = document.createElement("p");
+      p.classList.add("replay");
+      p.innerText = "My Name is Nihal";
+	responsiveVoice.speak(p.innerText);
+      texts.appendChild(p);
+    }
+    if (text.includes("open my YouTube")) {
+      p = document.createElement("p");
+      p.classList.add("replay");
+      p.innerText = "opening youtube";
+      texts.appendChild(p);
+      console.log("opening youtube");
+      window.open("https://www.youtube.com/");
+    }
+    p = document.createElement("p");
+  }
+});
+
+// console.log(texts,"Nihal")
+ const start=()=>{
+		recognition.start();
+ 	
+ // 	 navigator.mediaDevices.getUserMedia({video: false, audio: true}).then( stream => {
+	// // console.log(stream,"streams")
+	// if(stream.active===true){
+	// }
+	// else{
+	// 	console.log("Mic permission reset")
+	// }
+ //    }).catch( err => {
+ //        console.log("u got an error:" + err)
+ //    });
+		// recognition.start();
+
+  //   console.log("Voice recognition started. Try speaking into the microphone.");
+  
+}
+  
+//  // recognition.onresult = function(event) {
+    
+//  //  };
+  
+//   // start recognition
+//   recognition.start();
+// 	// recognition.start();
+
+// }
+function welcome() {
+  let today = new Date()
+  let currentHour = today.getHours()
+  if (currentHour < 12) {
+	responsiveVoice.speak('Good morning. How may I help you?');
+    // say('Good morning. How may I help you?');
+  } else if (currentHour < 18) {
+	responsiveVoice.speak('Good afternoon. How may I help you?');
+
+    // say('Good afternoon. How may I help you?');
+  } else {
+    // 18:00 - 23:59
+	responsiveVoice.speak('Good evening. How may I help you?');
+
+  }
+}
+// navigator.mediaDevices.getUserMedia({video: false, audio: true}).then( stream => {
+// 	// console.log(stream,"streams")
+// 	if(stream.active===true){
+// 		recognition.start();
+// 	}
+// 	else{
+// 		console.log("Mic permission reset")
+// 	}
+//     }).catch( err => {
+//         console.log("u got an error:" + err)
+//     });
+
+</script>
 </html>
